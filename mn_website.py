@@ -1,5 +1,4 @@
 import re
-import json
 import os
 import time
 import requests
@@ -9,7 +8,13 @@ login_url = "https://menofia.education/login/index.php"
 course_url_index = "https://menofia.education/course/view.php?id="
 scraped_data = {}
 
+# env keys
+user_name = os.environ.get('SSID')
+password = os.environ.get('PASS')
+
+
 def download_data(data_type, content_url, session):
+    '''Downloading data based on its type'''
 
     dir = data_type
 
@@ -24,7 +29,8 @@ def download_data(data_type, content_url, session):
             f.write(s.content)
 
 def get_content(content_url, session):
-    
+    '''Getting the urls of the contents'''
+
     dir = content_url.split('/')[4] 
     
     # a pdf 
@@ -53,10 +59,6 @@ def get_content(content_url, session):
     if dir == 'assign' :
         pass
 
-
-user_name = os.environ.get('SSID')
-password = os.environ.get('PASS')
-
 s = requests.Session()
 
 page = s.get(login_url)
@@ -65,7 +67,7 @@ pattern = '<input type="hidden" name="logintoken" value="\w{32}">'
 token = re.findall(pattern, page.text)
 token = re.findall("\w{32}", token[0])
 
-cookie = page.cookies.get_dict()
+#cookie = page.cookies.get_dict()
 
 data = {
     'username' : user_name,
@@ -115,7 +117,6 @@ for subject in course_urls:
     
     except:
         print("No contents yet")
-
 
 
 print(scraped_data)
